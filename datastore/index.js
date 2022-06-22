@@ -3,8 +3,12 @@ const fs = require('fs');
 const path = require('path');
 const _ = require('underscore');
 const counter = require('./counter');
+const Promise = require('bluebird');
 
 // Public API - Fix these CRUD functions ///////////////////////////////////////
+
+const readdirAsync = Promise.promisify(fs.readdir);
+const readFileAsync = Promise.promisify(fs.readFile);
 
 exports.create = (text, callback) => {
   // need to get an id from getUniqueId.
@@ -27,18 +31,36 @@ exports.create = (text, callback) => {
 // should return an empty array when there are no todos
 // sould return an array with all saved todos
 
+// readFileAsync
 exports.readAll = (callback) => {
+  console.log(exports.dataDir);
 
-  fs.readdir( exports.dataDir, undefined, (err, data) => {
-    var idArray = [];
-    data.forEach((idPath) => {
-      // console.log(idPath);
-      let todoID = idPath.slice(0, 5);
-      idArray.push({id: todoID, text: todoID});
-    });
+  var todoIDs = [];
 
-    callback( err, idArray );
-  });
+  readdirAsync(exports.dataDir)
+    .then((data) => {
+      var array = [];
+      data.forEach((path) => {
+        array.push(readFileAsync(exports.dataDir + '\\' + path));
+        
+        todoIDs.push(path.slice(0, 5));
+      });
+      
+      return Promise.all(array);
+    })
+    .then((data) => {
+      // console.log('------------------------------data');
+      // console.log(data);
+
+      var todos = data.map((buffer, index) => (
+        { id: todoIDs[index], text: buffer.toString() }
+      ));
+      // console.log('------------------------------todos');
+      // console.log(todos);
+
+      callback(null, todos);
+    })
+    .catch((e) => callback(e));
 };
 
 exports.readOne = (id, callback) => {
