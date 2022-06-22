@@ -4,8 +4,6 @@ const path = require('path');
 const _ = require('underscore');
 const counter = require('./counter');
 
-// var items = {};
-
 // Public API - Fix these CRUD functions ///////////////////////////////////////
 
 exports.create = (text, callback) => {
@@ -30,9 +28,7 @@ exports.create = (text, callback) => {
 // sould return an array with all saved todos
 
 exports.readAll = (callback) => {
-  //get list of ids created so far
-  
-  // get array off ids, somehow
+
   fs.readdir( exports.dataDir, undefined, (err, data) => {
     var idArray = [];
     data.forEach((idPath) => {
@@ -79,14 +75,16 @@ exports.update = (id, text, callback) => {
 };
 
 exports.delete = (id, callback) => {
-  var item = items[id];
-  delete items[id];
-  if (!item) {
-    // report an error if item not found
-    callback(new Error(`No item with id: ${id}`));
-  } else {
-    callback();
+
+  var todoPath = `${exports.dataDir}\\${id}.txt`;
+
+  try {
+    fs.unlinkSync(todoPath);
+  } catch (err) {
+    callback(new Error('Bad file path'));
   }
+
+  callback(null);
 };
 
 // Config+Initialization code -- DO NOT MODIFY /////////////////////////////////
