@@ -3,14 +3,26 @@ const path = require('path');
 const _ = require('underscore');
 const counter = require('./counter');
 
-var items = {};
+// var items = {};
 
 // Public API - Fix these CRUD functions ///////////////////////////////////////
 
 exports.create = (text, callback) => {
-  var id = counter.getNextUniqueId();
-  items[id] = text;
-  callback(null, { id, text });
+  // need to get an id from getUniqueId.
+  counter.getNextUniqueId((err, id) => {
+    // generate file path to new todo item
+    const fileName = exports.dataDir + '\\' + id + '.txt';
+    // Use fs to write the text parameter into the file path. 
+    // console.log(` ----- fileName: ${fileName}`);
+    fs.writeFile(fileName, text, (err) => {
+      if (err) {
+        throw ('error creating todo file');
+      } else {
+        // console.log(` ----- text: ${text}`);
+        callback(null, {id, text});
+      }
+    });
+  });
 };
 
 exports.readAll = (callback) => {
