@@ -1,3 +1,4 @@
+const { log } = require('console');
 const fs = require('fs');
 const path = require('path');
 const _ = require('underscore');
@@ -19,17 +20,36 @@ exports.create = (text, callback) => {
         throw ('error creating todo file');
       } else {
         // console.log(` ----- text: ${text}`);
-        callback(null, {id, text});
+        callback(null, {id: id, text: text});
       }
     });
   });
 };
 
+// should return an empty array when there are no todos
+// sould return an array with all saved todos
+
 exports.readAll = (callback) => {
-  var data = _.map(items, (text, id) => {
-    return { id, text };
+  //get list of ids created so far
+  
+  // get array off ids, somehow
+  fs.readdir( exports.dataDir, undefined, (err, data) => {
+    var idArray = [];
+    data.forEach((idPath) => {
+      // console.log(idPath);
+      let todoID = idPath.slice(0, 5);
+      idArray.push({id: todoID, text: todoID});
+    });
+
+    callback( err, idArray );
   });
-  callback(null, data);
+
+  // readFile( fileNamePath, callback )
+
+  // var data = _.map(items, (text, id) => {
+  //   return { id, text };
+  // });
+  // callback(null, {id: id, text: id});
 };
 
 exports.readOne = (id, callback) => {
