@@ -43,22 +43,21 @@ exports.readAll = (callback) => {
 
     callback( err, idArray );
   });
-
-  // readFile( fileNamePath, callback )
-
-  // var data = _.map(items, (text, id) => {
-  //   return { id, text };
-  // });
-  // callback(null, {id: id, text: id});
 };
 
 exports.readOne = (id, callback) => {
-  var text = items[id];
-  if (!text) {
-    callback(new Error(`No item with id: ${id}`));
-  } else {
-    callback(null, { id, text });
-  }
+  // generate a filepath
+  var todoPath = `${exports.dataDir}\\${id}.txt`;
+
+  // use fs.readfile
+  fs.readFile(todoPath, (err, text) => {
+    if (err) {
+      callback(new Error(`No item with id: ${id}`));
+    } else {
+      text = text.toString();
+      callback(null, { id, text });
+    }
+  });
 };
 
 exports.update = (id, text, callback) => {
