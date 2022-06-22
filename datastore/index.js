@@ -61,12 +61,20 @@ exports.readOne = (id, callback) => {
 };
 
 exports.update = (id, text, callback) => {
-  var item = items[id];
-  if (!item) {
-    callback(new Error(`No item with id: ${id}`));
+
+  var todoPath = `${exports.dataDir}\\${id}.txt`;
+
+  if (fs.existsSync(todoPath)) {
+    fs.writeFile(todoPath, text, (err) => {
+      if (err) {
+        throw new Error('error updating todo file');
+      } else {
+        // console.log(` ----- text: ${text}`);
+        callback(null, {id: id, text: text});
+      }
+    });
   } else {
-    items[id] = text;
-    callback(null, { id, text });
+    callback(new Error(`No item with id: ${id}`));
   }
 };
 
