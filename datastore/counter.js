@@ -2,7 +2,7 @@ const fs = require('fs');
 const path = require('path');
 const sprintf = require('sprintf-js').sprintf;
 
-var counter = 0;
+// var counter = 0;
 
 // Private helper functions ////////////////////////////////////////////////////
 
@@ -38,9 +38,17 @@ const writeCounter = (count, callback) => {
 
 // Public API - Fix this function //////////////////////////////////////////////
 
-exports.getNextUniqueId = () => {
-  counter = counter + 1;
-  return zeroPaddedNumber(counter);
+exports.getNextUniqueId = (callback) => {
+
+  var counter;
+  readCounter( function(err, value) {
+    counter = value;
+    // console.log(` ---- Counter: ${counter}`);
+
+    counter++;
+    writeCounter(counter, callback);
+  });
+
 };
 
 
@@ -48,3 +56,5 @@ exports.getNextUniqueId = () => {
 // Configuration -- DO NOT MODIFY //////////////////////////////////////////////
 
 exports.counterFile = path.join(__dirname, 'counter.txt');
+//C:\Users\moofu\Documents\Programming\00_HACK_REACTOR\WEEK_4\rfp2205-cruddy-todo\datastore\counter.txt
+console.log(exports.counterFile);
