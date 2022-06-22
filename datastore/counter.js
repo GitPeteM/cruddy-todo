@@ -25,6 +25,9 @@ const readCounter = (callback) => {
   });
 };
 
+// write file will create and update a file, if it doesn't exist we will create it.
+//look at docs for fs node module
+// diagram for where callbacks would be used and how data is being passed around.
 const writeCounter = (count, callback) => {
   var counterString = zeroPaddedNumber(count);
   fs.writeFile(exports.counterFile, counterString, (err) => {
